@@ -1,0 +1,688 @@
+<!-- Simulateur PEA · version premium · MoneyRadar · 23/11/2026 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>/* ===== Simulateur PEA, version premium (UI/UX Pro Max : une colonne, grande typographie, fond neutre, un accent) =====
+   Fragment injectable : tout est scopé sous .mric-calc.pea.pp, responsive en @container, aucune police chargée. */
+.mric-calc.pea.pp{
+  container-type:inline-size;
+  --ink:#0B1120;--ink-2:#273044;--ink-3:#5B6478;--ink-4:#8A92A3;
+  --paper:#F7F7F4;--card:#FFFFFF;--line:#E4E6E0;--line-2:#CDD1C8;
+  --accent:#008C64;--accent-2:#00704F;--accent-soft:rgba(0,140,100,.09);--mint:#00F5C0;
+  --pea-c-vers:#C6CCD6;--pea-c-pea:#008C64;--pea-c-cto:#1764D8;--pea-c-av:#7A2FD0;--pea-c-imp:#D9750B;--pea-c-frais:#8A92A3;
+  --r:18px;--ease:cubic-bezier(.2,.7,.2,1);
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:var(--paper);color:var(--ink-2);line-height:1.55;font-size:16px;
+}
+.mric-calc.pp :where(*,*::before,*::after){box-sizing:border-box}
+.mric-calc.pp :where(h1,h2,h3,p,ul,dl,dd){margin:0;padding:0}
+.mric-calc.pp :where(ul){list-style:none}
+.mric-calc.pp :where(button,input,select){font:inherit;color:inherit}
+.mric-calc.pp :where(a){color:inherit}
+.mric-calc.pp :where(h1,h2,h3){color:var(--ink)}
+.mric-calc.pp .pp-inn{max-width:1120px;margin:0 auto;padding:0 20px}
+.mric-calc.pp .pp-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.mric-calc.pp .pp-eyebrow span{width:18px;height:2px;background:currentColor;border-radius:2px}
+.mric-calc.pp :focus-visible{outline:3px solid rgba(0,140,100,.45);outline-offset:2px;border-radius:6px}
+
+/* boutons */
+.mric-calc.pp .pp-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 26px;border-radius:999px;background:var(--mint);color:#04261E;font-weight:800;font-size:16px;text-decoration:none;cursor:pointer;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.mric-calc.pp .pp-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.mric-calc.pp .pp-btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,245,192,.25)}
+.mric-calc.pp .pp-btn-g{background:var(--accent);color:#fff;width:100%}
+.mric-calc.pp .pp-btn-g:hover{box-shadow:0 10px 24px rgba(0,140,100,.25)}
+
+/* hero : le bleu nuit de MoneyRadar */
+.mric-calc.pp .pp-hero{background:radial-gradient(120% 80% at 85% 0%,rgba(0,245,192,.14),transparent 60%),#0A0E18;color:#C9D2E3;padding:72px 0 64px}
+.mric-calc.pp .pp-hero .pp-eyebrow{color:var(--mint)}
+.mric-calc.pp .pp-hero h1{color:#fff;font-size:clamp(40px,7cqi,76px);line-height:1.02;letter-spacing:-.035em;font-weight:850;margin:16px 0 18px;max-width:14ch}
+.mric-calc.pp .pp-hero h1 em{font-style:normal;color:var(--mint)}
+.mric-calc.pp .pp-lede{font-size:clamp(17px,1.9cqi,20px);max-width:56ch;margin-bottom:28px}
+
+/* simulateur */
+.mric-calc.pp .pp-sim{padding:56px 0 24px}
+.mric-calc.pp .pp-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;align-items:start}
+.mric-calc.pp .pp-form{display:flex;flex-direction:column;gap:30px}
+.mric-calc.pp .pp-field{display:flex;flex-direction:column;gap:12px}
+.mric-calc.pp .pp-field-h{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.mric-calc.pp .pp-field-h label{font-size:17px;font-weight:700;color:var(--ink);display:flex;flex-direction:column}
+.mric-calc.pp .pp-field-h small{font-size:13px;font-weight:500;color:var(--ink-3)}
+.mric-calc.pp .pp-field-h small a{color:var(--accent);text-underline-offset:2px}
+.mric-calc.pp .pp-num{display:flex;align-items:baseline;gap:6px;border-bottom:2px solid var(--line-2);padding:2px 0;transition:border-color .2s}
+.mric-calc.pp .pp-num:focus-within{border-color:var(--accent)}
+.mric-calc.pp .pp-num input{width:4.6ch;border:0;background:transparent;text-align:right;font-size:32px;font-weight:800;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums;padding:0;outline:none}
+.mric-calc.pp .pp-num span{font-size:16px;font-weight:700;color:var(--ink-3)}
+.mric-calc.pp .pp-field-s .pp-num input{font-size:22px}
+.mric-calc.pp .pp-adv .pp-num input{font-size:18px;width:4ch}
+/* curseur */
+.mric-calc.pp .pp-range{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;cursor:pointer;--p:50%}
+.mric-calc.pp .pp-range::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:linear-gradient(90deg,var(--accent) 0 var(--p),var(--line) var(--p) 100%)}
+.mric-calc.pp .pp-range::-moz-range-track{height:6px;border-radius:999px;background:var(--line)}
+.mric-calc.pp .pp-range::-moz-range-progress{height:6px;border-radius:999px;background:var(--accent)}
+.mric-calc.pp .pp-range::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:#fff;border:3px solid var(--accent);box-shadow:0 2px 8px rgba(11,17,32,.18);transition:transform .15s}
+.mric-calc.pp .pp-range::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--accent);box-shadow:0 2px 8px rgba(11,17,32,.18)}
+.mric-calc.pp .pp-range:active::-webkit-slider-thumb{transform:scale(1.15)}
+.mric-calc.pp .pp-scale{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-4);margin-top:-6px}
+.mric-calc.pp .pp-scale .pp-5{color:var(--accent);font-weight:600}
+/* raccourcis */
+.mric-calc.pp .pea-chips{display:flex;flex-wrap:wrap;gap:8px}
+.mric-calc.pp .pea-chips button{border:1px solid var(--line-2);background:var(--card);color:var(--ink-3);border-radius:999px;padding:7px 14px;font-size:13.5px;font-weight:650;cursor:pointer;transition:all .18s var(--ease)}
+.mric-calc.pp .pea-chips button:hover{border-color:var(--accent);color:var(--ink)}
+.mric-calc.pp .pea-chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+/* réglages avancés */
+.mric-calc.pp .pp-adv{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.mric-calc.pp .pp-adv summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 0;cursor:pointer;font-size:14px;color:var(--ink-3)}
+.mric-calc.pp .pp-adv summary::-webkit-details-marker{display:none}
+.mric-calc.pp .pp-adv summary em{font-style:normal;font-weight:700;color:var(--accent);white-space:nowrap}
+.mric-calc.pp .pp-adv summary em::after{content:" +";}
+.mric-calc.pp .pp-adv[open] summary em::after{content:" −"}
+.mric-calc.pp .pp-adv-body{display:flex;flex-direction:column;gap:16px;padding:4px 0 20px}
+.mric-calc.pp .pp-adv-body label{font-size:15px}
+.mric-calc.pp .pp-adv select{border:1px solid var(--line-2);border-radius:10px;padding:9px 12px;background:var(--card);font-size:15px;max-width:60%}
+
+/* résultat */
+.mric-calc.pp .pp-result{position:sticky;top:24px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:30px;box-shadow:0 1px 2px rgba(11,17,32,.04),0 24px 48px -24px rgba(11,17,32,.18)}
+.mric-calc.pp .pp-r-k{font-size:15px;color:var(--ink-3)}
+.mric-calc.pp .pp-r-k b{color:var(--ink)}
+.mric-calc.pp .pp-r-big{font-size:clamp(44px,6.2cqi,68px);font-weight:850;letter-spacing:-.04em;line-height:1.05;color:var(--ink);font-variant-numeric:tabular-nums;margin:6px 0 4px;white-space:nowrap}
+.mric-calc.pp .pp-r-sub{font-size:14px;color:var(--ink-3)}
+.mric-calc.pp .pp-r-sub b{color:var(--accent-2)}
+.mric-calc.pp .pp-split{display:flex;height:12px;border-radius:999px;overflow:hidden;margin:22px 0 14px;background:var(--line)}
+.mric-calc.pp .pp-split i{display:block;height:100%;transition:width .5s var(--ease)}
+.mric-calc.pp .pp-s-v{background:var(--pea-c-vers)}
+.mric-calc.pp .pp-s-g{background:var(--pea-c-pea)}
+.mric-calc.pp .pp-s-i{background:var(--pea-c-imp)}
+.mric-calc.pp .pp-s-f{background:var(--pea-c-frais)}
+.mric-calc.pp .pp-legend{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.mric-calc.pp .pp-legend div{display:flex;flex-direction:column}
+.mric-calc.pp .pp-legend dt{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-3)}
+.mric-calc.pp .pp-legend dt i{width:9px;height:9px;border-radius:3px}
+.mric-calc.pp .pp-legend dd{font-size:17px;font-weight:750;color:var(--ink);font-variant-numeric:tabular-nums}
+.mric-calc.pp .pp-r-vs{display:flex;flex-direction:column;gap:6px;margin:20px 0;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:14px;color:var(--ink-3)}
+.mric-calc.pp .pp-r-vs b{color:var(--accent-2);font-variant-numeric:tabular-nums}
+.mric-calc.pp .pp-disc{font-size:12px;color:var(--ink-4);text-align:center;margin-top:8px}
+.mric-calc.pp .pp-alert{margin-top:12px;font-size:13px;color:#8A4B00;background:#FFF4E5;border-radius:10px;padding:10px 12px}
+.mric-calc.pp .pp-alert:empty{display:none}
+.mric-calc.pp.pp-inc .pp-split,.mric-calc.pp.pp-inc .pp-r-vs,.mric-calc.pp.pp-inc .pp-btn-g,.mric-calc.pp.pp-inc .pp-disc{display:none}
+
+/* détail */
+.mric-calc.pp .pp-detail{padding:48px 0 24px}
+.mric-calc.pp .pp-block{padding:40px 0;border-top:1px solid var(--line)}
+.mric-calc.pp .pp-block h2{font-size:clamp(26px,3.6cqi,38px);line-height:1.12;letter-spacing:-.025em;font-weight:800;margin:10px 0 14px;max-width:24ch}
+.mric-calc.pp .pp-block h3{font-size:21px;font-weight:800;letter-spacing:-.015em;margin:8px 0 12px}
+.mric-calc.pp .pp-intro,.mric-calc.pp .pp-p{font-size:16px;color:var(--ink-3);max-width:70ch}
+.mric-calc.pp .pp-p b{color:var(--ink)}
+.mric-calc.pp .pp-two{display:grid;grid-template-columns:1fr 1fr;gap:48px;border-top:1px solid var(--line)}
+.mric-calc.pp .pp-two .pp-block{border-top:0}
+.mric-calc.pp .pea-note{margin:14px 0 0;font-size:14px;color:var(--ink-3)}
+.mric-calc.pp .pea-note b{color:var(--ink)}
+.mric-calc.pp .pea-empty{color:var(--ink-4)}
+/* courbe */
+.mric-calc.pp .pea-chart{margin-top:22px}
+.mric-calc.pp .pea-chart .mric-ff-title{display:none}
+.mric-calc.pp .pea-chart-h{display:flex;justify-content:flex-end}
+.mric-calc.pp .pea-chart-lg{display:flex;gap:18px;font-size:13px;color:var(--ink-3)}
+.mric-calc.pp .pea-chart-lg span{display:inline-flex;align-items:center;gap:7px}
+.mric-calc.pp .pea-chart-lg i{display:inline-block;width:18px;height:3px;border-radius:2px}
+.mric-calc.pp .pea-lg-v{background:var(--accent)}
+.mric-calc.pp .pea-lg-d{background:repeating-linear-gradient(90deg,var(--ink-4) 0 4px,transparent 4px 7px)}
+.mric-calc.pp .pea-chart svg{display:block;width:100%;height:auto;margin-top:12px;overflow:visible}
+.mric-calc.pp .pea-chart text{font-size:12px;fill:var(--ink-4)}
+.mric-calc.pp .pea-ax{stroke:var(--line-2)}
+.mric-calc.pp .pea-ar{fill:var(--accent);opacity:.1}
+.mric-calc.pp .pea-ln{fill:none;stroke:var(--accent);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.mric-calc.pp .pea-ln-d{fill:none;stroke:var(--ink-4);stroke-width:2;stroke-dasharray:5 5}
+.mric-calc.pp .pea-pt{fill:var(--accent);stroke:#fff;stroke-width:3}
+/* enveloppes */
+.mric-calc.pp .pea-env{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.mric-calc.pp .pea-env>.pea-note{grid-column:1/-1}
+.mric-calc.pp .pea-env-r{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.mric-calc.pp .pea-env-r:hover{transform:translateY(-3px);box-shadow:0 16px 32px -18px rgba(11,17,32,.25)}
+.mric-calc.pp .pea-env-h{display:flex;flex-direction:column;gap:10px}
+.mric-calc.pp .pea-env-h span{display:flex;flex-direction:column;gap:2px}
+.mric-calc.pp .pea-env-h span b{font-size:15px}
+.mric-calc.pp .pea-env-h small,.mric-calc.pp .pea-env-d{font-size:12.5px;color:var(--ink-3)}
+.mric-calc.pp .pea-env-h>b{font-size:28px;font-weight:850;letter-spacing:-.03em;color:var(--ink);font-variant-numeric:tabular-nums}
+.mric-calc.pp .pea-env-t{display:block;height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin:14px 0 8px}
+.mric-calc.pp .pea-env-t i{display:block;height:100%;border-radius:999px;transition:width .6s var(--ease)}
+/* classement */
+.mric-calc.pp .pea-rank{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.mric-calc.pp .pea-rank-h{display:none}
+.mric-calc.pp .pea-rank-r{display:grid;grid-template-columns:34px minmax(0,1fr) 130px 150px;align-items:center;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;transition:border-color .2s,box-shadow .2s}
+.mric-calc.pp .pea-rank-r:hover{border-color:var(--line-2);box-shadow:0 10px 24px -16px rgba(11,17,32,.25)}
+.mric-calc.pp .pea-rank-r:first-of-type{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.mric-calc.pp .pea-rank-r.is-me:not(:first-of-type){border-color:var(--ink-3)}
+.mric-calc.pp .pea-rank-n{font-size:20px;font-weight:850;color:var(--ink-4);font-variant-numeric:tabular-nums}
+.mric-calc.pp .pea-rank-r:first-of-type .pea-rank-n{color:var(--accent)}
+.mric-calc.pp .pea-rank-b{display:flex;align-items:center;gap:14px;min-width:0}
+.mric-calc.pp .pea-rank-b>span{display:flex;flex-direction:column;min-width:0}
+.mric-calc.pp .pea-rank-b a{font-weight:750;color:var(--ink);text-decoration:none;font-size:16px}
+.mric-calc.pp .pea-rank-b a:hover{text-decoration:underline}
+.mric-calc.pp .pea-rank-b small{font-size:12.5px;color:var(--ink-3)}
+.mric-calc.pp .pea-logo{width:62px;height:44px;object-fit:contain;border-radius:10px;background:#fff;box-shadow:0 0 0 1px var(--line);flex:0 0 auto}
+.mric-calc.pp .pea-rank-f{text-align:right;font-size:14px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.mric-calc.pp .pea-rank-f::before{content:"Frais ";color:var(--ink-4)}
+.mric-calc.pp .pea-rank-v{display:flex;flex-direction:column;text-align:right;font-variant-numeric:tabular-nums}
+.mric-calc.pp .pea-rank-v b{font-size:19px;font-weight:800;color:var(--ink)}
+.mric-calc.pp .pea-rank-v small{font-size:12.5px;color:var(--ink-3)}
+.mric-calc.pp .pea-go .pea-cta{display:inline-flex;margin-top:18px;padding:14px 24px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;text-decoration:none}
+.mric-calc.pp .pea-disc{font-size:12px;color:var(--ink-4);margin-top:8px}
+.mric-calc.pp .pea-disc a{color:var(--ink-3)}
+/* listes */
+.mric-calc.pp .pea-list{display:flex;flex-direction:column;gap:12px}
+.mric-calc.pp .pea-list li{position:relative;padding-left:18px;font-size:15px;color:var(--ink-2)}
+.mric-calc.pp .pea-list li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.mric-calc.pp .pea-list b{color:var(--ink)}
+/* méthode */
+.mric-calc.pp .pp-method{padding:8px 0 64px}
+.mric-calc.pp .pp-more{border-top:1px solid var(--line);margin-top:18px}
+.mric-calc.pp .pp-more summary{cursor:pointer;padding:14px 0;font-weight:700;color:var(--ink)}
+.mric-calc.pp .pp-more ul{display:flex;flex-direction:column;gap:8px;padding:0 0 14px 18px;list-style:disc;color:var(--ink-3);font-size:15px}
+.mric-calc.pp .pp-more a{color:var(--accent)}
+
+/* apparitions et courbe qui se trace (seulement si les animations sont permises) */
+.mric-calc.pp.pp-anim .pp-reveal{opacity:0;transform:translateY(18px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.mric-calc.pp.pp-anim .pp-reveal.is-in{opacity:1;transform:none}
+.mric-calc.pp.pp-anim .pp-reveal .pea-ln{stroke-dasharray:3000;stroke-dashoffset:3000}
+.mric-calc.pp.pp-anim .pp-reveal.is-in .pea-ln{stroke-dashoffset:0;transition:stroke-dashoffset 1.4s var(--ease) .15s}
+@media (prefers-reduced-motion:reduce){
+  .mric-calc.pp *{transition:none!important;animation:none!important}
+}
+
+/* tablette et téléphone */
+@container (max-width:860px){
+  .mric-calc.pp .pp-grid{grid-template-columns:1fr;gap:28px}
+  .mric-calc.pp .pp-result{position:static}
+  .mric-calc.pp .pea-env{grid-template-columns:1fr}
+  .mric-calc.pp .pp-two{grid-template-columns:1fr;gap:0}
+  .mric-calc.pp .pp-two .pp-block+.pp-block{border-top:1px solid var(--line)}
+  .mric-calc.pp .pea-rank-r{grid-template-columns:26px minmax(0,1fr) auto}
+  .mric-calc.pp .pea-rank-f{display:none}
+}
+@container (max-width:520px){
+  .mric-calc.pp .pp-inn{padding:0 16px}
+  .mric-calc.pp .pp-hero{padding:48px 0 44px}
+      .mric-calc.pp .pp-result{padding:22px}
+  .mric-calc.pp .pp-num input{font-size:26px}
+  .mric-calc.pp .pea-logo{width:48px;height:34px}
+  .mric-calc.pp .pea-rank-r{padding:12px;gap:10px}
+  .mric-calc.pp .pea-rank-b{gap:10px}
+  .mric-calc.pp .pea-rank-b a{font-size:15px}
+  .mric-calc.pp .pea-rank-v b{font-size:16px}
+  .mric-calc.pp .pp-adv select{max-width:55%}
+}
+/* téléphone : header centré */
+@container (max-width:520px){
+  .mric-calc.pp .pp-hero .pp-inn{text-align:center}
+  .mric-calc.pp .pp-hero h1,.mric-calc.pp .pp-hero .pp-lede{margin-left:auto;margin-right:auto}
+  .mric-calc.pp .pp-hero .pp-eyebrow{justify-content:center}
+}
+</style>
+
+<div class="mric-calc pea pp" data-share-url="https://moneyradar.org/simulateur-pea/">
+
+  <!-- ===== HERO ===== -->
+  <section class="pp-hero">
+    <div class="pp-inn">
+      <p class="pp-eyebrow"><span></span>Simulateur PEA · fiscalité 2026</p>
+      <h1>Combien vous rapportera <em>votre PEA</em>&nbsp;?</h1>
+      <p class="pp-lede">Votre capital net d'impôts et de frais, le classement de 7 courtiers pour votre profil, et ce que la même épargne donnerait sur un compte-titres ou une assurance vie.</p>
+      <a class="pp-btn" href="#pp-sim">Lancer la simulation <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg></a>
+    </div>
+  </section>
+
+  <!-- ===== SIMULATEUR ===== -->
+  <section class="pp-sim" id="pp-sim">
+    <div class="pp-inn pp-grid">
+
+      <div class="mric-form pp-form">
+        <div class="pp-field">
+          <div class="pp-field-h"><label for="pea-mensuel">Je verse chaque mois</label><div class="pp-num"><input type="text" id="pea-mensuel" value="200" inputmode="numeric"><span>€</span></div></div>
+          <input class="pp-range" type="range" min="0" max="2000" step="25" value="200" data-for="pea-mensuel" aria-label="Versement mensuel">
+          <div class="pea-chips"><button type="button" data-for="pea-mensuel" data-v="100">100&nbsp;€</button><button type="button" data-for="pea-mensuel" data-v="200">200&nbsp;€</button><button type="button" data-for="pea-mensuel" data-v="500">500&nbsp;€</button><button type="button" data-for="pea-mensuel" data-v="1000">1&nbsp;000&nbsp;€</button></div>
+        </div>
+        <div class="pp-field">
+          <div class="pp-field-h"><label for="pea-duree">Pendant</label><div class="pp-num"><input type="text" id="pea-duree" value="20" inputmode="numeric"><span>ans</span></div></div>
+          <input class="pp-range" type="range" min="1" max="40" step="1" value="20" data-for="pea-duree" aria-label="Durée en années">
+          <div class="pp-scale"><span>1 an</span><span class="pp-5">5 ans : fiscalité allégée</span><span>40 ans</span></div>
+        </div>
+        <div class="pp-field">
+          <div class="pp-field-h"><label for="pea-rendement">Rendement espéré <small>par an, avant les frais de l'ETF · <a href="#pp-methode">pourquoi 7&nbsp;%</a></small></label><div class="pp-num"><input type="text" id="pea-rendement" value="7" inputmode="decimal"><span>%</span></div></div>
+          <input class="pp-range" type="range" min="0" max="12" step="0.5" value="7" data-for="pea-rendement" aria-label="Rendement annuel">
+          <div class="pea-chips"><button type="button" data-for="pea-rendement" data-v="4">Prudent 4&nbsp;%</button><button type="button" data-for="pea-rendement" data-v="5">5&nbsp;%</button><button type="button" data-for="pea-rendement" data-v="7">7&nbsp;%</button><button type="button" data-for="pea-rendement" data-v="9">Optimiste 9&nbsp;%</button></div>
+        </div>
+        <div class="pp-field pp-field-s">
+          <div class="pp-field-h"><label for="pea-initial">Versement de départ <small>facultatif</small></label><div class="pp-num"><input type="text" id="pea-initial" value="1000" inputmode="numeric"><span>€</span></div></div>
+        </div>
+
+        <details class="pea-adv pp-adv" id="pea-adv">
+          <summary><span class="pea-adv-sum" id="pea-adv-sum">ETF à 0,20&nbsp;% · 1 ordre par mois · courtier le moins cher</span><em>Réglages avancés</em></summary>
+          <div class="pp-adv-body">
+            <div class="pp-field-h"><label for="pea-ter">Frais de l'ETF <small>« frais courants » de sa fiche</small></label><div class="pp-num"><input type="text" id="pea-ter" value="0,20" inputmode="decimal"><span>%</span></div></div>
+            <div class="pp-field-h"><label for="pea-ordres">Ordres par mois <small>le versement est réparti entre eux</small></label><div class="pp-num"><input type="text" id="pea-ordres" value="1" inputmode="numeric"><span>ordre</span></div></div>
+            <div class="pp-field-h"><label for="pea-courtier">Votre courtier</label><select id="pea-courtier"><option value="" selected>Le moins cher pour moi</option></select></div>
+            <div class="pp-field-h"><label for="pea-foyer">Vous déclarez vos impôts <small>abattement de l'assurance vie</small></label><select id="pea-foyer"><option value="seul" selected>Seul(e)</option><option value="couple">En couple</option></select></div>
+            <div class="pp-field-h"><label for="pea-avfrais">Frais d'une assurance vie <small>par an, pour la comparaison</small></label><div class="pp-num"><input type="text" id="pea-avfrais" value="0,50" inputmode="decimal"><span>%</span></div></div>
+          </div>
+        </details>
+      </div>
+
+      <aside class="pp-result" id="mric-results" aria-live="polite">
+        <p class="pp-r-k">Dans <b id="pp-r-ans">20 ans</b>, votre PEA vaudrait</p>
+        <p class="pp-r-big" id="mric-gauge-num">—</p>
+        <p class="pp-r-sub" id="pea-sub">net d'impôts et de frais</p>
+        <div class="pp-split" id="pp-split" aria-hidden="true"><i class="pp-s-v"></i><i class="pp-s-g"></i><i class="pp-s-i"></i></div>
+        <dl class="pp-legend" id="pp-legend"></dl>
+        <div class="pp-r-vs" id="pp-r-vs"></div>
+        <a class="pp-btn pp-btn-g" id="pp-go" href="#" target="_blank" rel="noopener sponsored">Ouvrir mon PEA</a>
+        <p class="pp-disc">Investir comporte un risque de perte en capital.</p>
+        <p class="pp-alert" id="pea-equiv"></p>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- ===== DÉTAIL ===== -->
+  <section class="pp-detail" id="mric-analyse">
+    <div class="pp-inn">
+      <div class="pp-block pp-reveal">
+        <p class="pp-eyebrow"><span></span>Année par année</p>
+        <h2>Les intérêts composés font le travail sur la durée.</h2>
+        <p class="pp-intro" id="pea-intro"></p>
+        <div class="pea-chart" id="pea-chart"></div>
+      </div>
+
+      <div class="pp-block pp-reveal">
+        <p class="pp-eyebrow"><span></span>Même effort, trois enveloppes</p>
+        <h2>PEA, compte-titres ou assurance vie&nbsp;?</h2>
+        <div class="pea-env" id="pea-env"></div>
+      </div>
+
+      <div class="pp-block pp-reveal">
+        <p class="pp-eyebrow"><span></span>Le classement pour votre profil</p>
+        <h2>7 courtiers, de vos versements à votre capital net.</h2>
+        <div class="pea-rank" id="pea-rank"></div>
+        <div class="pea-go" id="pea-go"></div>
+      </div>
+
+      <div class="pp-two pp-reveal">
+        <div class="pp-block">
+          <p class="pp-eyebrow"><span></span>Les frais</p>
+          <h3>Ce que vous coûtent les frais</h3>
+          <div id="pea-frais"></div>
+        </div>
+        <div class="pp-block">
+          <p class="pp-eyebrow"><span></span>Votre cas</p>
+          <h3>À savoir</h3>
+          <ul class="pea-list" id="pea-alertes"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MÉTHODE ===== -->
+  <section class="pp-method" id="pp-methode">
+    <div class="pp-inn">
+      <div class="pp-block pp-reveal">
+        <p class="pp-eyebrow"><span></span>Méthode</p>
+        <h2>Pourquoi 7&nbsp;% par défaut&nbsp;?</h2>
+        <p class="pp-p">C'est une hypothèse prudente pour un ETF d'actions mondiales sur une longue durée. L'indice MSCI World a rapporté <b>8,98&nbsp;% par an en moyenne de fin 1987 à octobre 2026</b>, en dollars et dividendes réinvestis, mais il a aussi perdu <b>57&nbsp;%</b> entre octobre 2007 et mars 2009. Les performances passées ne préjugent pas des performances futures.</p>
+        <details class="pp-more"><summary>Comment le résultat est calculé</summary><ul>
+          <li>Rendement constant, capitalisé chaque mois. Chaque versement est investi en fin de mois, le versement de départ au premier jour.</li>
+          <li>Frais de l'ETF retirés chaque mois de l'encours, dans les trois enveloppes.</li>
+          <li>Frais de courtage selon la grille de chaque courtier sur Euronext Paris, plafonnés à 0,5&nbsp;% de l'ordre. Formule Fortuneo la moins chère pour votre profil, plan d'investissement gratuit chez Trade Republic.</li>
+          <li>Versements du PEA plafonnés à 150&nbsp;000&nbsp;€&nbsp;: le surplus va sur un compte-titres, taxé à 31,4&nbsp;%.</li>
+          <li>Impôts calculés sur un retrait total au terme&nbsp;: PEA 18,6&nbsp;% après 5&nbsp;ans (31,4&nbsp;% avant), compte-titres 31,4&nbsp;%, assurance vie 17,2&nbsp;% et 7,5&nbsp;% après 8&nbsp;ans au-delà de l'abattement de 4&nbsp;600&nbsp;€ (9&nbsp;200&nbsp;€ en couple), 30&nbsp;% avant.</li>
+        </ul></details>
+        <details class="pp-more"><summary>Ce que le simulateur ne prend pas en compte</summary><ul>
+          <li>Les variations de la bourse&nbsp;: le résultat dépend de l'état du marché l'année du retrait.</li>
+          <li>Les frais de change, la taxe sur les transactions financières, les frais de transfert ou de clôture.</li>
+          <li>Les dividendes taxés chaque année sur un compte-titres, les rachats d'assurance vie étalés et la transmission.</li>
+          <li>Les offres de bienvenue et les ETF sans frais de courtage de certains courtiers.</li>
+        </ul></details>
+        <details class="pp-more"><summary>Sources</summary><ul>
+          <li>Fiscalité&nbsp;: service-public.fr, prélèvements sociaux de 18,6&nbsp;% depuis le 1er janvier 2026, 17,2&nbsp;% sur l'assurance vie.</li>
+          <li>Rendement historique&nbsp;: fiche de l'indice MSCI World (USD) au 30 octobre 2026.</li>
+          <li>Frais de courtage&nbsp;: grilles des 7 courtiers vérifiées le 14 septembre 2026, détaillées dans notre <a href="https://moneyradar.org/bourse/pea/meilleur-pea/">comparatif des meilleurs PEA</a>.</li>
+        </ul></details>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ===== Simulateur PEA v1 : moteur =====
+   Hypothèses (écrites aussi dans la méthode de la page) :
+   - rendement annuel constant, capitalisé chaque mois (taux mensuel équivalent) ; chaque versement est investi en fin de mois ;
+   - frais de l'ETF prélevés chaque mois (1/12 du taux annuel) sur l'encours ;
+   - frais de courtage : grille Euronext de chaque courtier, vérifiée le 14/09/2026 (page Meilleur PEA), plafonnés à 0,5 % de l'ordre ;
+   - PEA : versements plafonnés à 150 000 € ; au-delà, le surplus va sur un compte-titres (mêmes frais, flat tax) ;
+   - impôts au retrait total, au terme : PEA 18,6 % de prélèvements sociaux après 5 ans, 31,4 % avant ;
+     compte-titres 31,4 % (ETF capitalisant, plus-value taxée à la sortie) ;
+     assurance vie : 17,2 % de prélèvements sociaux + 7,5 % d'impôt après 8 ans, après abattement de 4 600 € (9 200 € en couple),
+     12,8 % sur la part des gains liée aux versements au-delà de 150 000 € ; 30 % avant 8 ans. */
+(function(){
+  'use strict';
+  var root=document.querySelector('.mric-calc.pea');
+  if(!root)return;
+
+  var PLAFOND=150000,PS_PEA=0.186,PFU=0.314,PS_AV=0.172,IR_AV=0.075,IR_AV_HAUT=0.128,PFU_AV=0.30;
+  var CAP=0.005; /* plafond légal des frais de courtage sur un PEA : 0,5 % de l'ordre passé en ligne */
+
+  /* ---- grilles Euronext (montant d'ordre a, contexte : rang de l'ordre dans le mois, volume du mois) ---- */
+  function bd(a){if(a<=500)return 0.99;if(a<=1000)return 1.90;if(a<=2000)return 2.90;if(a<=4400)return 3.80;return a*0.0009;}
+  var BROKERS=[
+    {id:'xtb',logo:'https://moneyradar.org/wp-content/uploads/2023/10/xtb-logo-bg.png',nom:'XTB',avis:'https://moneyradar.org/bourse/xtb/',go:'https://moneyradar.org/go/xtb',min:10,formules:[
+      {nom:'Formule unique',f:function(a,c){var lib=Math.max(0,100000-c.vol);return a<=lib?0:Math.max(10,(a-lib)*0.002);}}]},
+    {id:'tr',logo:'https://moneyradar.org/wp-content/uploads/2023/10/trade-republic-logo-bg.png',nom:'Trade Republic',avis:'https://moneyradar.org/bourse/trade-republic/pea/',go:'https://moneyradar.org/go/trade-republic',min:1,formules:[
+      {nom:'Plan d’investissement',f:function(a,c){return c.initial?1:0;}}]},
+    {id:'bd',logo:'https://moneyradar.org/wp-content/uploads/2023/10/bourse-direct-logo-bg.png',nom:'Bourse Direct',avis:'https://moneyradar.org/bourse/bourse-direct/',go:'https://moneyradar.org/go/bourse-direct',min:80,formules:[
+      {nom:'Formule unique',f:function(a){return bd(a);}}]},
+    {id:'fortuneo',logo:'https://moneyradar.org/wp-content/uploads/2023/10/fortuneo-logo-bg.png',nom:'Fortuneo',avis:'https://moneyradar.org/bourse/fortuneo/',go:'https://moneyradar.org/go/fortuneo',min:0,formules:[
+      {nom:'Starter',f:function(a,c){return (c.rang===0&&a<=500)?0:a*0.0035;}},
+      {nom:'Progress',f:function(a){return a<=3000?4.90:a*0.0015;}},
+      {nom:'Trader Pro',f:function(a){return a<=10000?9.50:a*0.0010;}}]},
+    {id:'bourso',logo:'https://moneyradar.org/wp-content/uploads/2023/10/boursobank-logo-bg.png',nom:'BoursoBank',avis:'https://moneyradar.org/bourse/boursorama/',go:'https://moneyradar.org/go/boursorama',min:200,formules:[
+      {nom:'Découverte',f:function(a){return a<=500?1.99:a*0.005;}}]},
+    {id:'ibkr',logo:'https://moneyradar.org/wp-content/uploads/2023/10/interactive-brokers-logo-bg.png',nom:'Interactive Brokers',avis:'https://moneyradar.org/bourse/interactive-brokers/pea/',go:'https://moneyradar.org/go/interactive-brokers',min:0,formules:[
+      {nom:'Dégressive',f:function(a){return Math.min(29,Math.max(1.25,a*0.0005));}}]},
+    {id:'saxo',logo:'https://moneyradar.org/wp-content/uploads/2023/10/saxo-bank-logo-bg.png',nom:'Saxo Banque',avis:'https://moneyradar.org/bourse/saxo-banque/',go:'https://moneyradar.org/go/saxobank',min:0,formules:[
+      {nom:'Classic',f:function(a){return Math.max(2,a*0.0008);}}]}
+  ];
+  function fee(fn,a,c){return a>0?Math.min(fn(a,c),a*CAP):0;}
+
+  /* ---- une épargne simulée mois par mois ----
+     p : {I, M, Y, r, ter, k, feeFn (ou null), gestion (frais annuels du contrat), plafond (bool)} */
+  function simuler(p){
+    var rm=Math.pow(1+p.r,1/12)-1,gm=(p.ter+(p.gestion||0))/12,n=Math.round(p.Y*12);
+    var v=0,vers=0,frais=0,cto=0,ctoVers=0,moisPlafond=null;
+    function placer(montant,nOrdres,initial,mois){
+      var pea=montant,surplus=0;
+      if(p.plafond){var reste=Math.max(0,PLAFOND-vers);if(pea>reste){surplus=pea-reste;pea=reste;}}
+      var vol=0;
+      [[pea,'p'],[surplus,'c']].forEach(function(x){
+        var tot=x[0];if(tot<=0)return;var par=tot/nOrdres,fi=0;
+        for(var i=0;i<nOrdres;i++){var f=p.feeFn?fee(p.feeFn,par,{rang:i,vol:vol,initial:initial}):0;fi+=f;vol+=par;}
+        frais+=fi;
+        if(x[1]==='p'){v+=tot-fi;vers+=tot;}else{cto+=tot-fi;ctoVers+=tot;}
+      });
+      if(p.plafond&&moisPlafond===null&&vers>=PLAFOND-0.005)moisPlafond=mois;
+    }
+    var serie=[];
+    if(p.I>0)placer(p.I,1,true,0);
+    if(p.serie)serie.push({an:0,val:v+cto,vers:vers+ctoVers});
+    for(var m=1;m<=n;m++){
+      v*=1+rm;v*=1-gm;cto*=1+rm;cto*=1-gm;
+      if(p.M>0)placer(p.M,p.k,false,m);
+      if(p.serie&&m%12===0)serie.push({an:m/12,val:v+cto,vers:vers+ctoVers});
+    }
+    return {val:v,vers:vers,frais:frais,cto:cto,ctoVers:ctoVers,moisPlafond:moisPlafond,serie:serie};
+  }
+
+  function impotPea(s,Y){
+    var g=Math.max(0,s.val-s.vers),t=Y>=5?PS_PEA:PFU;
+    var gc=Math.max(0,s.cto-s.ctoVers);
+    return {gain:s.val-s.vers+(s.cto-s.ctoVers),impot:g*t+gc*PFU,brut:s.val+s.cto,vers:s.vers+s.ctoVers};
+  }
+  function impotCto(s){var g=Math.max(0,s.val-s.vers);return {gain:s.val-s.vers,impot:g*PFU,brut:s.val,vers:s.vers};}
+  function impotAv(s,Y,couple){
+    var g=Math.max(0,s.val-s.vers),imp;
+    if(Y<8)imp=g*PFU_AV;
+    else{
+      var taxable=Math.max(0,g-(couple?9200:4600)),part=s.vers>PLAFOND?PLAFOND/s.vers:1;
+      imp=g*PS_AV+taxable*(part*IR_AV+(1-part)*IR_AV_HAUT);
+    }
+    return {gain:s.val-s.vers,impot:imp,brut:s.val,vers:s.vers};
+  }
+
+  /* ---- formats ---- */
+  function parse(s,allowZero){
+    s=String(s==null?'':s).replace(/[−–]/g,'-');var s0=s.replace(/[\s  ]/g,'');var v;
+    if(s0==='')return null;
+    if(/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(s0))v=parseFloat(s0.replace(/\./g,'').replace(',','.'));
+    else v=parseFloat(s0.replace(/[€%]/g,'').replace(',','.'));
+    if(isNaN(v)||!isFinite(v)||v<0||(!allowZero&&v===0))return null;
+    return v;
+  }
+  function euro(n){return Math.round(n).toLocaleString('fr-FR',{style:'currency',currency:'EUR',minimumFractionDigits:0,maximumFractionDigits:0}).replace('-','−');}
+  function euro2(n){return n.toLocaleString('fr-FR',{style:'currency',currency:'EUR',minimumFractionDigits:n<100&&n%1?2:0,maximumFractionDigits:n<100?2:0});}
+  function pct(x,d){return (x*100).toFixed(d==null?1:d).replace('.',',').replace(/,0+$/,'')+' %';}
+  function duree(mois){var a=Math.floor(mois/12),m=mois%12;return (a?a+' an'+(a>1?'s':''):'')+(a&&m?' et ':'')+(m?m+' mois':'');}
+  window.__mricPeaFmt={euro:euro,euro2:euro2,pct:pct,duree:duree};
+  window.__mricPeaBrokers=BROKERS;
+
+  /* ---- saisie ---- */
+  var $=function(id){return document.getElementById(id);};
+  var sel=$('pea-courtier');
+  BROKERS.forEach(function(b){var o=document.createElement('option');o.value=b.id;o.textContent=b.nom;sel.appendChild(o);});
+
+  function lire(){
+    return {I:parse($('pea-initial').value,true),M:parse($('pea-mensuel').value,true),Y:parse($('pea-duree').value),
+      r:parse($('pea-rendement').value,true),ter:parse($('pea-ter').value,true),k:parse($('pea-ordres').value),
+      courtier:sel.value||'',couple:$('pea-foyer').value==='couple',gestion:parse($('pea-avfrais').value,true)};
+  }
+
+  function compute(){
+    var x=lire(),o={entree:x};
+    if(x.I==null||x.M==null||!x.Y||x.r==null||(x.I+x.M)<=0){o.incomplet=true;return o;}
+    var Y=Math.min(50,Math.round(x.Y)),r=Math.min(0.2,x.r/100),ter=Math.min(0.03,(x.ter||0)/100),k=Math.max(1,Math.min(20,Math.round(x.k||1))),gest=Math.min(0.03,(x.gestion==null?0.5:x.gestion)/100);
+    var base={I:x.I,M:x.M,Y:Y,r:r,ter:ter,k:k};
+    o.Y=Y;o.r=r;o.ter=ter;o.k=k;o.I=x.I;o.M=x.M;o.couple=x.couple;o.gestion=gest;
+    o.versTotal=x.I+x.M*12*Y;
+
+    /* classement des courtiers : pour chacun, la formule la moins chère sur toute la durée */
+    o.classement=BROKERS.map(function(b){
+      var best=null;
+      b.formules.forEach(function(f){
+        var s=simuler(Object.assign({},base,{feeFn:f.f,plafond:true})),t=impotPea(s,Y),net=t.brut-t.impot;
+        if(!best||net>best.net)best={id:b.id,nom:b.nom,logo:b.logo,avis:b.avis,go:b.go,formule:b.formules.length>1?f.nom:f.nom,frais:s.frais,net:net,s:s,t:t,fn:f.f,
+          sousMin:(x.M>0&&b.min&&x.M/k<b.min)?b.min:0};
+      });
+      return best;
+    }).sort(function(a,b){return b.net-a.net||a.frais-b.frais;});
+    o.meilleur=o.classement[0];
+    o.choisi=x.courtier?o.classement.filter(function(c){return c.id===x.courtier;})[0]:o.meilleur;
+    o.choixAuto=!x.courtier;
+    var c=o.choisi;
+    o.serie=simuler(Object.assign({},base,{feeFn:c.fn,plafond:true,serie:true})).serie;
+    o.pea={net:c.net,brut:c.t.brut,gain:c.t.gain,impot:c.t.impot,frais:c.frais,vers:c.t.vers,ctoSurplus:c.s.cto,moisPlafond:c.s.moisPlafond};
+
+    /* même effort, autres enveloppes */
+    var sc=simuler(Object.assign({},base,{feeFn:c.fn,plafond:false})),tc=impotCto(sc);
+    o.cto={net:tc.brut-tc.impot,impot:tc.impot,gain:tc.gain,frais:sc.frais};
+    var sa=simuler(Object.assign({},base,{feeFn:null,gestion:gest,plafond:false})),ta=impotAv(sa,Y,x.couple);
+    o.av={net:ta.brut-ta.impot,impot:ta.impot,gain:ta.gain,fraisContrat:0};
+    /* ce que coûtent les frais de l'ETF et les frais du contrat (manque à gagner, intérêts composés compris) */
+    var s0=simuler(Object.assign({},base,{ter:0,feeFn:c.fn,plafond:true})),t0=impotPea(s0,Y);
+    o.coutEtf=Math.max(0,(t0.brut-t0.impot)-c.net);
+    var sav0=simuler(Object.assign({},base,{feeFn:null,gestion:0,plafond:false})),tav0=impotAv(sav0,Y,x.couple);
+    o.coutContrat=Math.max(0,(tav0.brut-tav0.impot)-o.av.net);
+    o.ecartCourtiers=o.classement[0].net-o.classement[o.classement.length-1].net;
+    o.avant5=Y<5;o.avant8=Y<8;
+    return o;
+  }
+
+  window.__mricPeaData=compute();
+  window.__mricPeaCompute=function(){window.__mricPeaData=compute();if(window.__mricRenderCard)window.__mricRenderCard();if(window.__mricRenderDetail)window.__mricRenderDetail();};
+  root.querySelector('.mric-form').addEventListener('input',window.__mricPeaCompute);
+  root.querySelector('.mric-form').addEventListener('change',window.__mricPeaCompute);
+})();
+</script>
+<script>
+/* ===== Simulateur PEA, version premium : résultat, curseurs, apparitions au défilement ===== */
+(function(){
+  'use strict';
+  var root=document.querySelector('.mric-calc.pea.pp');
+  if(!root)return;
+  var F=window.__mricPeaFmt,$=function(id){return document.getElementById(id);};
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function norm(v){return parseFloat(String(v||'').replace(/[\s  ]/g,'').replace(',','.'));}
+
+  /* --- curseurs reliés aux champs (dans les deux sens) --- */
+  var ranges=root.querySelectorAll('.pp-range');
+  function paintRange(r){var mn=+r.min,mx=+r.max,v=+r.value;r.style.setProperty('--p',((v-mn)/(mx-mn)*100)+'%');}
+  ranges.forEach(function(r){
+    var el=$(r.getAttribute('data-for'));
+    r.addEventListener('input',function(){el.value=String(r.value).replace('.',',');el.dispatchEvent(new Event('input',{bubbles:true}));paintRange(r);});
+    el.addEventListener('input',function(){var v=norm(el.value);if(!isNaN(v)){r.value=Math.max(+r.min,Math.min(+r.max,v));paintRange(r);}});
+    paintRange(r);
+  });
+
+  /* --- compteur animé --- */
+  var big=$('mric-gauge-num'),shown=0,raf=0;
+  function count(to){
+    cancelAnimationFrame(raf);
+    if(reduce||!isFinite(shown)){shown=to;big.textContent=F.euro(to);return;}
+    var from=shown,t0=performance.now(),d=Math.min(700,250+Math.abs(to-from)/400);
+    (function step(t){var k=Math.min(1,(t-t0)/d),e=1-Math.pow(1-k,3);shown=from+(to-from)*e;big.textContent=F.euro(shown);if(k<1)raf=requestAnimationFrame(step);else shown=to;})(t0);
+  }
+
+  function render(){
+    var d=window.__mricPeaData;
+    if(!d||d.incomplet){cancelAnimationFrame(raf);big.textContent='—';shown=0;$('pea-sub').textContent='Indiquez un versement, une durée et un rendement.';$('pp-legend').innerHTML='';$('pp-r-vs').innerHTML='';$('pea-equiv').textContent='';root.classList.add('pp-inc');return;}
+    root.classList.remove('pp-inc');
+    var p=d.pea,gn=p.gain-p.impot,tot=p.vers+Math.max(0,gn)+p.impot||1;
+    $('pp-r-ans').textContent=d.Y+' an'+(d.Y>1?'s':'');
+    count(p.net);
+    $('pea-sub').innerHTML='net d’impôts et de frais, chez <b>'+d.choisi.nom+'</b>';
+    var sp=$('pp-split');
+    sp.querySelector('.pp-s-v').style.width=(p.vers/tot*100)+'%';
+    sp.querySelector('.pp-s-g').style.width=(Math.max(0,gn)/tot*100)+'%';
+    sp.querySelector('.pp-s-i').style.width=(p.impot/tot*100)+'%';
+    $('pp-legend').innerHTML='<div><dt><i class="pp-s-v"></i>Vos versements</dt><dd>'+F.euro(p.vers)+'</dd></div>'
+      +'<div><dt><i class="pp-s-g"></i>Vos gains nets</dt><dd>'+F.euro(gn)+'</dd></div>'
+      +'<div><dt><i class="pp-s-i"></i>Impôts</dt><dd>'+F.euro(p.impot)+'</dd></div>'
+      +'<div><dt><i class="pp-s-f"></i>Frais de courtage</dt><dd>'+F.euro2(p.frais)+'</dd></div>';
+    var e1=p.net-d.cto.net,e2=p.net-d.av.net,sg=function(e){return (e>=0?'+':'−')+F.euro(Math.abs(e)).replace('−','');};
+    $('pp-r-vs').innerHTML='<span><b>'+sg(e1)+'</b> par rapport à un compte-titres</span><span><b>'+sg(e2)+'</b> par rapport à une assurance vie</span>';
+    var go=$('pp-go');go.href=d.meilleur.go;go.textContent='Ouvrir mon PEA chez '+d.meilleur.nom;
+    var a=[];
+    if(d.avant5)a.push('Moins de 5 ans : un retrait clôture le PEA et les gains sont taxés à 31,4 %.');
+    if(p.moisPlafond)a.push('Plafond de 150 000 € atteint au bout de '+F.duree(p.moisPlafond)+' : le surplus va sur un compte-titres.');
+    $('pea-equiv').textContent=a.join(' ');
+  }
+  window.__mricRenderCard=render;
+  render();
+
+  /* --- apparitions au défilement, courbe qui se trace --- */
+  var blocks=root.querySelectorAll('.pp-reveal');
+  if(reduce||!('IntersectionObserver' in window)){blocks.forEach(function(b){b.classList.add('is-in');});}
+  else{
+    root.classList.add('pp-anim');
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('is-in');io.unobserve(e.target);}});},{threshold:.12});
+    blocks.forEach(function(b){io.observe(b);});
+    /* garde-fou : tout s'affiche au bout de 2,5 s, même si l'observateur ne se déclenche pas */
+    function filet(){blocks.forEach(function(b){if(b.getBoundingClientRect().top<window.innerHeight)b.classList.add('is-in');});}
+    setTimeout(filet,1500);window.addEventListener('scroll',function(){clearTimeout(filet.t);filet.t=setTimeout(filet,400);},{passive:true});
+  }
+})();
+</script>
+<script>
+/* ===== Simulateur PEA v1 : le détail (classement, enveloppes, frais, alertes) ===== */
+(function(){
+  'use strict';
+  var root=document.querySelector('.mric-calc.pea');
+  if(!root)return;
+  var F=window.__mricPeaFmt;
+  var $=function(id){return document.getElementById(id);};
+  var VIDE='<p class="pea-empty">Votre détail apparaît dès que le versement, la durée et le rendement sont renseignés.</p>';
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function ecart(e){return e===0?'—':(e>0?'+':'−')+F.euro(Math.abs(e)).replace('−','');}
+
+  function render(){
+    var d=window.__mricPeaData;
+    if(!d||d.incomplet){$('pea-chart').innerHTML='';['pea-rank','pea-env','pea-frais'].forEach(function(id){$(id).innerHTML=VIDE;});$('pea-go').innerHTML='';$('pea-alertes').innerHTML='';return;}
+    var top=d.classement[0];
+
+    /* courbe : valeur du PEA (avant impôts) et versements cumulés, année par année */
+    (function(){
+      var S=d.serie||[];if(S.length<2){$('pea-chart').innerHTML='';return;}
+      var W=Math.max(300,Math.round($('pea-chart').clientWidth||720)),H=W<520?190:250,L=8,R=8,T=14,B=26,mx=Math.max.apply(null,S.map(function(p){return p.val;}))*1.06||1,n=S.length-1;
+      var X=function(i){return L+(W-L-R)*i/n;},Y=function(v){return T+(H-T-B)*(1-v/mx);};
+      var line=function(k){return S.map(function(p,i){return (i?'L':'M')+X(i).toFixed(1)+' '+Y(p[k]).toFixed(1);}).join(' ');};
+      var area=line('val')+' L'+X(n).toFixed(1)+' '+Y(0)+' L'+X(0)+' '+Y(0)+' Z';
+      var pas=n<=10?2:n<=20?5:10,ticks='';
+      for(var i=0;i<=n;i+=pas)ticks+='<text x="'+X(i).toFixed(1)+'" y="'+(H-6)+'" text-anchor="'+(i===0?'start':'middle')+'">'+(i===0?'Aujourd’hui':i+' ans')+'</text>';
+      var last=S[n],gain=last.val-last.vers;
+      $('pea-chart').innerHTML='<div class="pea-chart-h"><p class="mric-ff-title">Votre PEA, année par année</p><div class="pea-chart-lg"><span><i class="pea-lg-v"></i>Valeur avant impôts</span><span><i class="pea-lg-d"></i>Vos versements</span></div></div>'
+        +'<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Au bout de '+n+' ans, votre PEA vaudrait '+F.euro(last.val)+' avant impôts, pour '+F.euro(last.vers)+' versés.">'
+        +'<line class="pea-ax" x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(0)+'" y2="'+Y(0)+'"/>'
+        +'<path class="pea-ar" d="'+area+'"/><path class="pea-ln" d="'+line('val')+'"/><path class="pea-ln-d" d="'+line('vers')+'"/>'
+        +'<circle class="pea-pt" cx="'+X(n)+'" cy="'+Y(last.val)+'" r="4.5"/>'+ticks+'</svg>'
+        +'<p class="pea-note">Au bout de '+n+' ans&nbsp;: <b>'+F.euro(last.val)+'</b> avant impôts, dont <b>'+F.euro(gain)+'</b> de gains pour '+F.euro(last.vers)+' versés. Les intérêts composés font l’essentiel de l’écart sur la fin.</p>';
+    })();
+
+    /* classement */
+    $('pea-intro').innerHTML='Pour '+(d.I>0?F.euro(d.I)+' au départ puis ':'')+F.euro(d.M)+' par mois pendant '+d.Y+' an'+(d.Y>1?'s':'')+', en '+d.k+' ordre'+(d.k>1?'s':'')+' par mois, avec '+F.pct(d.r)+' de rendement et '+F.pct(d.ter,2)+' de frais d’ETF.';
+    $('pea-rank').innerHTML='<div class="pea-rank-h"><span>Courtier</span><span>Frais de courtage</span><span>Capital net</span></div>'+d.classement.map(function(c,i){
+      var me=c.id===d.choisi.id;
+      return '<div class="pea-rank-r'+(me?' is-me':'')+'"><span class="pea-rank-n">'+(i+1)+'</span>'
+        +'<span class="pea-rank-b"><img class="pea-logo" src="'+c.logo+'" alt="" width="56" height="40" loading="lazy"><span><a href="'+c.avis+'">'+esc(c.nom)+'</a><small>'+esc(c.formule)+(c.sousMin?' · ordre minimum '+c.sousMin+'&nbsp;€':'')+'</small></span></span>'
+        +'<span class="pea-rank-f">'+F.euro2(c.frais)+'</span>'
+        +'<span class="pea-rank-v"><b>'+F.euro(c.net)+'</b>'+(i?'<small>'+ecart(c.net-top.net)+'</small>':'<small>le plus élevé</small>')+'</span></div>';
+    }).join('');
+    var bas=d.classement[d.classement.length-1];
+    $('pea-go').innerHTML='<p class="pea-note">Entre le premier et le dernier&nbsp;: <b>'+F.euro(d.ecartCourtiers)+'</b> sur '+d.Y+' ans. '
+      +(d.ecartCourtiers<1000?'Avec vos montants, le choix du courtier compte peu&nbsp;: le plafond légal de 0,5&nbsp;% par ordre limite l’écart.':'Avec vos montants, le choix du courtier compte vraiment.')+'</p>'
+      +'<a class="pea-cta" href="'+top.go+'" target="_blank" rel="noopener sponsored">Ouvrir mon PEA chez '+esc(top.nom)+' →</a>'
+      +'<p class="pea-disc">Investir comporte un risque de perte en capital. <a href="'+top.avis+'">Lire notre avis sur '+esc(top.nom)+'</a></p>';
+
+    /* enveloppes */
+    var env=[['PEA',d.pea.net,'var(--pea-c-pea,#00F5C0)','chez '+d.choisi.nom+(d.avant5?', retrait avant 5 ans':'')],
+      ['Compte-titres',d.cto.net,'var(--pea-c-cto,#3B9EFF)','flat tax de 31,4 %'],
+      ['Assurance vie',d.av.net,'var(--pea-c-av,#A855F7)',F.pct(d.gestion,2)+' de frais par an'+(d.avant8?', retrait avant 8 ans':'')]];
+    var mx=Math.max.apply(null,env.map(function(e){return e[1];}))||1,best=env.slice().sort(function(a,b){return b[1]-a[1];})[0];
+    $('pea-env').innerHTML=env.map(function(e){
+      return '<div class="pea-env-r"><div class="pea-env-h"><span><b style="color:'+e[2]+'">'+e[0]+'</b><small>'+esc(e[3])+'</small></span><b>'+F.euro(e[1])+'</b></div>'
+        +'<span class="pea-env-t"><i style="width:'+Math.max(2,e[1]/mx*100)+'%;background:'+e[2]+'"></i></span>'
+        +(e===best?'':'<small class="pea-env-d">'+ecart(e[1]-best[1])+' par rapport au '+(best[0]==='PEA'?'PEA':best[0].toLowerCase())+'</small>')+'</div>';
+    }).join('')+'<p class="pea-note">Même effort d’épargne, même rendement et même ETF&nbsp;; seuls les impôts et les frais changent.</p>';
+
+    /* frais */
+    $('pea-frais').innerHTML='<ul class="pea-list">'
+      +'<li><b>'+F.euro2(d.pea.frais)+'</b> de frais de courtage chez '+esc(d.choisi.nom)+' sur toute la durée.</li>'
+      +'<li><b>'+F.euro(d.coutEtf)+'</b> de capital en moins à cause des frais de l’ETF ('+F.pct(d.ter,2)+' par an), intérêts composés compris.'
+      +(d.ter>0.0025?' Un ETF à 0,20&nbsp;% ferait mieux.':'')+'</li>'
+      +'<li>Dans une assurance vie, les '+F.pct(d.gestion,2)+' de frais de gestion coûteraient <b>'+F.euro(d.coutContrat)+'</b> de plus.</li></ul>';
+
+    /* alertes */
+    var a=[];
+    if(d.avant5)a.push('<b>Moins de 5 ans</b>&nbsp;: un retrait clôture le PEA et les gains sont taxés à 31,4&nbsp;% au lieu de 18,6&nbsp;%. Le délai court depuis le premier versement&nbsp;: ouvrir un PEA tôt, même avec quelques euros, fait démarrer le compteur.');
+    else a.push('<b>Plus de 5 ans</b>&nbsp;: vos gains ne paient que les 18,6&nbsp;% de prélèvements sociaux. Le délai court depuis le premier versement, pas depuis chaque versement.');
+    if(d.pea.moisPlafond)a.push('<b>Plafond atteint</b> au bout de '+F.duree(d.pea.moisPlafond)+'&nbsp;: 150&nbsp;000&nbsp;€ versés. Votre PEA continue de fructifier, le surplus va sur un compte-titres ('+F.euro(d.pea.ctoSurplus)+' au terme, avant impôts).');
+    if(d.choisi.sousMin)a.push('<b>Ordre trop petit</b>&nbsp;: '+esc(d.choisi.nom)+' demande au moins '+d.choisi.sousMin+'&nbsp;€ par ordre. Regroupez vos versements ou passez moins d’ordres.');
+    if(!d.choixAuto&&d.choisi.id!==top.id)a.push('<b>'+esc(top.nom)+'</b> serait plus avantageux pour votre profil, de '+F.euro(top.net-d.choisi.net)+' au terme.');
+    if(d.r>0.09)a.push('<b>Rendement élevé</b>&nbsp;: au-delà de 9&nbsp;% par an, l’hypothèse dépasse la moyenne historique des actions mondiales. Le résultat est à prendre avec prudence.');
+    $('pea-alertes').innerHTML=a.map(function(x){return '<li>'+x+'</li>';}).join('');
+  }
+  window.__mricRenderDetail=render;
+  render();
+  var lw=0;window.addEventListener('resize',function(){var w=$('pea-chart').clientWidth;if(Math.abs(w-lw)>20){lw=w;render();}});
+})();
+
+/* ===== Simulateur PEA v1 : raccourcis de saisie et résumé des réglages avancés ===== */
+(function(){
+  'use strict';
+  var root=document.querySelector('.mric-calc.pea');
+  if(!root)return;
+  var form=root.querySelector('.mric-form');
+  function norm(v){return String(v||'').replace(/[\s  ]/g,'').replace(',','.');}
+  function sync(){
+    root.querySelectorAll('.pea-chips button').forEach(function(b){
+      var el=document.getElementById(b.getAttribute('data-for'));
+      b.setAttribute('aria-pressed',el&&parseFloat(norm(el.value))===parseFloat(b.getAttribute('data-v'))?'true':'false');
+    });
+    var ter=document.getElementById('pea-ter').value||'0',k=document.getElementById('pea-ordres').value||'1',sel=document.getElementById('pea-courtier');
+    var c=sel.value?sel.options[sel.selectedIndex].textContent:'courtier le moins cher';
+    var sum=document.getElementById('pea-adv-sum');
+    if(sum)sum.textContent='ETF à '+ter.replace('.',',')+' % · '+k+' ordre'+(parseFloat(norm(k))>1?'s':'')+' par mois · '+c;
+  }
+  root.querySelectorAll('.pea-chips button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var el=document.getElementById(b.getAttribute('data-for'));if(!el)return;
+      el.value=b.getAttribute('data-v');el.dispatchEvent(new Event('input',{bubbles:true}));
+    });
+  });
+  form.addEventListener('input',sync);form.addEventListener('change',sync);
+  sync();
+})();
+</script>
